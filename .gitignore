@@ -1,0 +1,4 @@
+*.o
+TEST/test1
+*_dats.c
+*~
