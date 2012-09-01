@@ -30,7 +30,7 @@ fun bitcoinrpc_fun {l:agz} (base: !event_base l, url: string, auth: string, json
 symintr bitcoinrpc
 fun bitcoinrpc_string {l:agz} (base: !event_base l, url: string, auth: string, json: string): rpc_result1
 fun bitcoinrpc_strptr {l:agz} (base: !event_base l, url: string, auth: string, json: strptr1): rpc_result1
-fun bitcoinrpc_json {l,l2:agz} (base: !event_base l, url: string, auth: string, json: JSONptr (l2, 0)): rpc_result1
+fun bitcoinrpc_json {l,l2:agz} (base: !event_base l, url: string, auth: string, json: !JSONptr (l2, 0)): rpc_result1
 overload bitcoinrpc with bitcoinrpc_string
 overload bitcoinrpc with bitcoinrpc_strptr
 overload bitcoinrpc with bitcoinrpc_json

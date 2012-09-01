@@ -133,7 +133,6 @@ end
 implement bitcoinrpc_json (base, url, auth, json) = let
   val s = json_dumps (json, 0)
   val () = assertloc (strptr_isnot_null s)
-  val () = json_decref (json)
 in
   bitcoinrpc_strptr (base, url, auth, s)
 end 
