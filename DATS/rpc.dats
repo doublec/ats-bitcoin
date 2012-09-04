@@ -37,7 +37,7 @@ in
   else {
     val () = cb (rpc_result_http_error (code))
     val () = cloptr_free (cb)
-    val () = evhttp_connection_free (cn)
+    val () = bitcoinrpc_disconnect (cn)
   }
 end
 
@@ -51,17 +51,10 @@ implement bitcoinrpc_fun (base, url, auth, json, cb) = {
   val (pff_host | host) = evhttp_uri_get_host (uri)
   val () = assertloc (strptr_isnot_null (host))
 
-  val port = evhttp_uri_get_port (uri)
-  val () = assertloc (port >= 80)
-  val port = uint16_of_int port
-
   val (pff_path | path) = evhttp_uri_get_path (uri)
   val () = assertloc (strptr_isnot_null (path))
 
-  val [lc:addr] cn = evhttp_connection_base_new(base,
-                                                null,
-                                                castvwtp1 {string} (host),
-                                                port)
+  val [lc:addr] cn = bitcoinrpc_connect (base, url)
   val () = assertloc (~cn)
 
   (* Copy a reference to the connection so we can pass it to the callback when the request is made *)
@@ -136,3 +129,26 @@ implement bitcoinrpc_json (base, url, auth, json) = let
 in
   bitcoinrpc_strptr (base, url, auth, s)
 end 
+
+implement bitcoinrpc_connect (base, url) = let
+  val uri = evhttp_uri_parse (url)
+  val () = assertloc (~uri)
+
+  val (pff_host | host) = evhttp_uri_get_host (uri)
+  val () = assertloc (strptr_isnot_null (host))
+
+  val port = evhttp_uri_get_port (uri)
+  val () = assertloc (port >= 80)
+  val port = uint16_of_int port
+
+  val cn = evhttp_connection_base_new(base,
+                                      null,
+                                      castvwtp1 {string} (host),
+                                      port)
+  prval () = pff_host (host)
+  val () = evhttp_uri_free (uri)
+in
+  cn
+end
+
+implement bitcoinrpc_disconnect (conn) = evhttp_connection_free (conn)

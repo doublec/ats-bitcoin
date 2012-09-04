@@ -8,7 +8,7 @@ fun event_loop_task {l:agz} (pff: event_base l -<lin,prf> void | base: event_bas
   val () = task_yield ()
 in
   (* If no events are queued and if no tasks are also queued we can exit *)
-  if event_base_got_exit (base) > 0 || (not events_queued && task_queue_count () = 0) then {
+  if event_base_got_exit (base) > 0 || (not events_queued && task_queue_count () + task_paused_count () = 0) then {
     prval () = pff (base)
   }
 

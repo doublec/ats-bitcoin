@@ -35,3 +35,6 @@ overload bitcoinrpc with bitcoinrpc_string
 overload bitcoinrpc with bitcoinrpc_strptr
 overload bitcoinrpc with bitcoinrpc_json
 
+fun bitcoinrpc_connect {l:agz} (base: !event_base l, url: string): [l2:addr] evhttp_connection l2
+fun bitcoinrpc_disconnect {l:agz} (conn: evhttp_connection l): void
+
