@@ -210,6 +210,20 @@ in
   result
 end
 
+implement bitcoinrpc_cn_strptr (cn, url, auth, json) = let
+  val r = bitcoinrpc_cn_string (cn, url, auth, castvwtp1 {string} {strptr1} (json))
+  val () = strptr_free (json)
+in
+  r
+end 
+
+implement bitcoinrpc_cn_json (cn, url, auth, json) = let
+  val s = json_dumps (json, 0)
+  val () = assertloc (strptr_isnot_null s)
+in
+  bitcoinrpc_cn_strptr (cn, url, auth, s)
+end 
+
 implement bitcoinrpc_connect (base, url) = let
   val uri = evhttp_uri_parse (url)
   val () = assertloc (~uri)
