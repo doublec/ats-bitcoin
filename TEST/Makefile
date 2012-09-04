@@ -13,11 +13,15 @@ checkall: compall cleanall
 ######
 
 compall: \
-  test1
+  test1 \
+  test2
 
 ######
 
 test1: test1.dats
+	$(ATSCC) $(CFLAGS) -o $@ $< $(ATSCTRB) $(LIBS) 
+
+test2: test2.dats
 	$(ATSCC) $(CFLAGS) -o $@ $< $(ATSCTRB) $(LIBS) 
 
 ######
@@ -27,5 +31,6 @@ clean:
 
 cleanall: clean
 	rm -f test1
+	rm -f test2
 
 ###### end of [Makefile] ######

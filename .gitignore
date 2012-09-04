@@ -1,4 +1,5 @@
 *.o
 TEST/test1
+TEST/test2
 *_dats.c
 *~

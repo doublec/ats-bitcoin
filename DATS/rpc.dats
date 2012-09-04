@@ -31,7 +31,7 @@ in
     val json = json_loads(castvwtp1 {string} (result), 0, e);
     val () = cb ((if ~json then rpc_result_json json else rpc_result_error json): rpc_result1)
     val () = cloptr_free (cb)
-    val () = evhttp_connection_free (cn)
+    val () = bitcoinrpc_disconnect (cn)
     val () = strptr_free (result)
   }
   else {
@@ -130,6 +130,86 @@ in
   bitcoinrpc_strptr (base, url, auth, s)
 end 
 
+implement bitcoinrpc_cn_fun (cn, url, auth, json, cb) = {
+  fun handle_cn_rpc (client: !evhttp_request1, cb: rpc_callback):void = let
+    val code = if evhttp_request_isnot_null (client) then evhttp_request_get_response_code(client) else 501
+  in
+    if code = HTTP_OK then {
+      val result = get_request_input_string (client)
+      var e: json_error_t? 
+      val json = json_loads(castvwtp1 {string} (result), 0, e);
+      val () = cb ((if ~json then rpc_result_json json else rpc_result_error json): rpc_result1)
+      val () = cloptr_free (cb)
+      val () = strptr_free (result)
+    }
+    else {
+      val () = cb (rpc_result_http_error (code))
+      val () = cloptr_free (cb)
+    }
+  end
+
+  val uri = evhttp_uri_parse (url)
+  val () = assertloc (~uri)
+
+  val (pff_host | host) = evhttp_uri_get_host (uri)
+  val () = assertloc (strptr_isnot_null (host))
+
+  val (pff_path | path) = evhttp_uri_get_path (uri)
+  val () = assertloc (strptr_isnot_null (path))
+
+  (* Copy a reference to the connection so we can pass it to the callback when the request is made *)
+  val client = evhttp_request_new {rpc_callback} (handle_cn_rpc, cb) 
+  val () = assertloc (~client)
+
+  val (pff_headers | headers) = evhttp_request_get_output_headers(client)
+  val r = evhttp_add_header(headers, "Host", castvwtp1 {string} (host))
+  val () = assertloc (r = 0)
+
+  val r = evhttp_add_header(headers, "Content-Type", "application/json")
+  val () = assertloc (r = 0)
+
+  val auth = string_to_base64 (auth)
+  val () = assertloc (strptr_isnot_null (auth))
+  val auth1 = string1_of_string (castvwtp1 {string} (auth))
+  val authorization = string1_append ("Basic ", auth1)
+  val authorization = strptr_of_strbuf authorization
+  val r = evhttp_add_header(headers, "Authorization", castvwtp1 {string} (authorization))
+  val () = assertloc (r = 0)
+  val () = strptr_free (authorization)
+  val () = strptr_free (auth)
+
+  val (pff_buffer | buffer) = evhttp_request_get_output_buffer (client)
+  val s = string1_of_string (json)
+  val r = evbuffer_add_string (buffer, s, string1_length (s))
+  val () = assertloc (r = 0)
+  prval () = pff_buffer (buffer)
+
+  val r = evhttp_make_request(cn, client, EVHTTP_REQ_POST, castvwtp1 {string} (path))
+  val () = assertloc (r = 0)
+
+  prval () = pff_path (path)
+  prval () = pff_host (host)
+  prval () = pff_headers (headers)
+  val () = evhttp_uri_free (uri)
+}
+
+implement bitcoinrpc_cn_string (cn, url, auth, json) = let
+  val tsk = global_scheduler_halt ()
+  var result: rpc_result1
+  prval (pff, pf) = __borrow (view@ result) where {
+                      extern prfun __borrow {l:addr} (r: !rpc_result1? @ l >> (rpc_result1 @ l))
+                                      : (rpc_result1 @ l -<lin,prf> void, rpc_result1? @ l)
+                    }
+  val () = bitcoinrpc_cn_fun (cn, url, auth, json, llam (r) => {
+                                val () = global_scheduler_queue_task (tsk)
+                                val () = result := r
+                                prval () = pff (pf)
+                              })
+  val () = global_scheduler_resume ()
+in
+  result
+end
+
 implement bitcoinrpc_connect (base, url) = let
   val uri = evhttp_uri_parse (url)
   val () = assertloc (~uri)
@@ -152,3 +232,4 @@ in
 end
 
 implement bitcoinrpc_disconnect (conn) = evhttp_connection_free (conn)
+
