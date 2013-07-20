@@ -1,8 +1,8 @@
-staload "contrib/bitcoin/SATS/rpc.sats"
-staload "contrib/libevent/SATS/libevent.sats"
-staload "contrib/jansson/SATS/jansson.sats"
-staload "contrib/task/SATS/task.sats"
-dynload "contrib/task/DATS/task.dats"
+staload "bitcoin/SATS/rpc.sats"
+staload "libevent/SATS/libevent.sats"
+staload "jansson/SATS/jansson.sats"
+staload "task/SATS/task.sats"
+dynload "task/DATS/task.dats"
 
 fun event_loop_task {l:agz} (pff: event_base l -<lin,prf> void | base: event_base l, events_queued: bool): void = let
   val () = task_yield ()

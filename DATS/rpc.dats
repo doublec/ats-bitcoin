@@ -1,9 +1,9 @@
 staload "prelude/SATS/unsafe.sats"
-staload "contrib/jansson/SATS/jansson.sats"
-staload "contrib/libevent/SATS/libevent.sats"
-staload "contrib/task/SATS/task.sats"
-staload "contrib/bitcoin/SATS/base64.sats"
-staload "contrib/bitcoin/SATS/rpc.sats"
+staload "jansson/SATS/jansson.sats"
+staload "libevent/SATS/libevent.sats"
+staload "task/SATS/task.sats"
+staload "bitcoin/SATS/base64.sats"
+staload "bitcoin/SATS/rpc.sats"
 
 #define ATS_DYNLOADFLAG 0 // no need for dynloading at run-time
 

@@ -1,11 +1,11 @@
-staload "contrib/bitcoin/SATS/base64.sats"
+staload "bitcoin/SATS/base64.sats"
 staload "prelude/SATS/unsafe.sats"
 
 #define ATS_DYNLOADFLAG 0 // no need for dynloading at run-time
 
 %{^
-#include "contrib/bitcoin/CATS/modp_b64.h"
-#include "contrib/bitcoin/CATS/modp_b64.c"
+#include "bitcoin/CATS/modp_b64.h"
+#include "bitcoin/CATS/modp_b64.c"
 %}
 
 dataview encode_v (int, int, addr) =

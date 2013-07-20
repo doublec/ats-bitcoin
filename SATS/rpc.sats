@@ -15,8 +15,8 @@
 *)
 #define ATS_STALOADFLAG 0 // no need for staloading at run-time
 
-staload "contrib/libevent/SATS/libevent.sats"
-staload "contrib/jansson/SATS/jansson.sats"
+staload "libevent/SATS/libevent.sats"
+staload "jansson/SATS/jansson.sats"
 
 dataviewtype rpc_result (l:addr) =
   | rpc_result_json (l) of ([l > null] JSONptr (l, 0))

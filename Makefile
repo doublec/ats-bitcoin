@@ -8,7 +8,7 @@
 ######
 ATSHOMEQ="$(ATSHOME)"
 ATSCC=$(ATSHOMEQ)/bin/atscc -Wall
-
+ATSCCLIB=$(shell pwd)/..
 ######
 
 all: atsctrb_bitcoin.o clean
@@ -21,10 +21,10 @@ atsctrb_bitcoin.o: rpc_dats.o base64_dats.o
 ######
 
 rpc_dats.o: DATS/rpc.dats
-	$(ATSCC) $(CFLAGS) -o $@ -c $<
+	$(ATSCC) -I$(ATSCCLIB) -IATS$(ATSCCLIB) $(CFLAGS) -o $@ -c $<
 
 base64_dats.o: DATS/base64.dats
-	$(ATSCC) $(CFLAGS) -o $@ -c $<
+	$(ATSCC) -I$(ATSCCLIB) -IATS$(ATSCCLIB) $(CFLAGS) -o $@ -c $<
 
 ######
 
